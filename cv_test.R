@@ -1,36 +1,18 @@
+print("> Starting CV Analyzer by Fabio Walter <")
+print(date())
+
 source("util.R")
 library(tools)
 library(dplyr)
 
-#file <- "Resume - Fabio SantAna - Senior Software Engineer - Fabio SantAna.docx"
-file <- "Resume - Fabio SantAna - Senior Software Engineer - Fabio SantAna.pdf"
+print(".Listing files")
+filesList <- list.files("data/raw", pattern = "(.docx|.pdf)$")
 
-defaultPath <- file.path("data/raw", file)
-
-# Script protection
-if (!file.exists(defaultPath)) {
-  stop(str_glue('File: {defaultPath} does not exists! >>> ENDING Script'))
+for (file in filesList) {
+  print(str_glue("Processing file: {file}"))
+  processFile(str_glue("data/raw/{file}"))
 }
-
-# Determines file extenstion and apply the correct extraction method
-switch (
-  file_ext(defaultPath),
-  docx = myCorpus <- readMyDocxx(defaultPath),
-  pdf = myCorpus <- readMyPDF(defaultPath)
-)
-
-# Cleaning text
-myCorpus <- remapText(myCorpus)
-
-# Creating an DataFrame
-df <- corpusToDataFrame(myCorpus) %>%
-  mutate(file = file) %>%
-  mutate(createdAt = Sys.time())
-
-# Saving results
-outFileName <- outFile(file)
-write_excel_csv2(df, str_glue("data/output/{outFileName}"))
-
+cat("Process end")
 
 # --------------------------
 ## PLOT
@@ -65,11 +47,11 @@ write_excel_csv2(df, str_glue("data/output/{outFileName}"))
 # # treemap
 ## install.packages("treemap")
 # library(treemap)
-treemap(
-  df[1:100,],
-  index = "word",
-  vSize = "freq",
-  vColor = "freq",
-  type = "value",
-  palette = "RdBu"
-)
+# treemap(
+#   df[1:100,],
+#   index = "word",
+#   vSize = "freq",
+#   vColor = "freq",
+#   type = "value",
+#   palette = "RdBu"
+# )

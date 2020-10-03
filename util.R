@@ -6,11 +6,13 @@ library(pdftools)
 library(tidyverse)
 library(tm)
 library(SnowballC)
+library(tools)
+library(dplyr)
 
 #'
 #'
 remapText <- function(corpus) {
-
+  print(".Cleaning text: Start")
   removeColon <- function(x) {
     gsub(",", "", x)
   }
@@ -33,6 +35,7 @@ remapText <- function(corpus) {
   corpus <- tm_map(corpus, removeWords, stopwords("english"))  # Remove stopwords
   myCorpus <- tm_map(myCorpus, stemDocument, language = "english")  # Stem words
   corpus <- tm_map(corpus, stripWhitespace)  # Stem words
+  print(".Cleaning text: End")
   return(corpus)
 }
 
@@ -72,4 +75,37 @@ outFile <- function(file) {
     str_replace_all("[:blank:]", "_") %>%
     str_to_lower %>% str_glue(".csv")
   return(outFile)
+}
+
+#'
+#'
+#'
+processFile <- function(defaultPath) {
+  print(".Processing: Begin")
+  # Script protection
+  if (!file.exists(defaultPath)) {
+    stop(str_glue('File: {defaultPath} does not exists! >>> ENDING Script'))
+  }
+
+  # Determines file extenstion and apply the correct extraction method
+  switch (
+    file_ext(defaultPath),
+    docx = myCorpus <<- readMyDocx(defaultPath),
+    pdf = myCorpus <<- readMyPDF(defaultPath)
+  )
+
+  # Cleaning text
+  myCorpus <- remapText(myCorpus)
+
+  # Creating an DataFrame
+  df <- corpusToDataFrame(myCorpus) %>%
+    mutate(file = file) %>%
+    mutate(createdAt = Sys.time())
+  print(".Processing: End")
+
+  print(".Saving result: Start")
+  # Saving results
+  outFileName <- outFile(file)
+  write_excel_csv2(df, str_glue("data/output/{outFileName}"))
+  print(".Saving result: End")
 }
