@@ -45,8 +45,9 @@ cat("Process end")
 # text(myBar, df[1:10, ]$freq + 0.4 , df[1:10, ]$freq, cex = 1)
 #
 # # treemap
-## install.packages("treemap")
+# install.packages("treemap")
 # library(treemap)
+# jpeg("my_plot.jpeg", quality = 90, width = 1300)
 # treemap(
 #   df[1:100,],
 #   index = "word",
@@ -55,3 +56,4 @@ cat("Process end")
 #   type = "value",
 #   palette = "RdBu"
 # )
+# dev.off()

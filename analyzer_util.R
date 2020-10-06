@@ -106,6 +106,6 @@ processFile <- function(defaultPath) {
   print(".Saving result: Start")
   # Saving results
   outFileName <- outFile(file)
-  write_excel_csv2(df, str_glue("data/output/{outFileName}"))
+  write_excel_csv2(df, str_glue("data/csv/{outFileName}"))
   print(".Saving result: End")
 }
